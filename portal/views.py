@@ -85,6 +85,7 @@ def result_view(request):
     if request.is_ajax():
         if request.GET.get('search'):
             text_to_search = request.GET.get('search')
+            print(text_to_search)
 
             return JsonResponse(
                 {
