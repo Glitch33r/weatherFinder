@@ -59,7 +59,7 @@ def result_view(request):
         SELECT w.*
         FROM portal_weather AS w
                  INNER JOIN portal_city AS c ON w.city_id= c.id
-        WHERE c.name LIKE '%{}%'
+        {}
         ORDER BY w.city_id ASC, w.date ASC
     """
     FILTER_DATE_QUERY = """
@@ -85,14 +85,17 @@ def result_view(request):
     if request.is_ajax():
         if request.GET.get('search'):
             text_to_search = request.GET.get('search')
-            for item in Weather.objects.raw(SEARCH_QUERY.format(text_to_search)):
-                print(item)
+            part = f"WHERE c.name LIKE '%{text_to_search}%'"
+
+            # print(
+            #     Weather.objects.raw(SEARCH_QUERY.format(part))
+            # )
 
             return JsonResponse(
                 {
                     'type': 'search',
                     'response': render_to_string('element.html', {
-                        'object_list': Weather.objects.raw(SEARCH_QUERY.format(text_to_search))
+                        'object_list': Weather.objects.raw(SEARCH_QUERY.format(part))
                     })
                 }
             )
