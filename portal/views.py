@@ -8,6 +8,7 @@ from django.views.generic.edit import FormView
 from portal.forms import CityFindForm
 from portal.models import City, Weather
 from portal.weather import WeatherFinder
+from django.conf import settings
 
 
 class CityAutocomplete(autocomplete.Select2QuerySetView):
@@ -43,7 +44,7 @@ def helper_for_pagination(request, p: Paginator):
 def submit_find_weather(request):
     if request.is_ajax():
         city = request.POST['name']
-        finder = WeatherFinder('3d01e07938359060ded56bac02e4224a', city, City, Weather)
+        finder = WeatherFinder(settings.API_KEY, city, City, Weather)
         result = finder.get_weather()
         if result:
             return JsonResponse({'status': True, 'msg': 'Founded!'})
