@@ -108,7 +108,7 @@ def result_view(request):
 
             part = "WHERE w.date BETWEEN '{}' AND '{}'".format(date_from, date_to)
             if city_name != '':
-                part += f"AND c.name LIKE '{city_name}%'"
+                part += f" AND c.name LIKE '{city_name}%'"
 
             print(FILTER_DATE_QUERY.format(part))
 
