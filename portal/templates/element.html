@@ -1,0 +1,15 @@
+{% for item in object_list %}
+    <tr>
+        <td>{{ item.city.name }}</td>
+        <td>{{ item.date|date:'Y-m-d' }}</td>
+        <td>{{ item.weather }}</td>
+        <td>{{ item.temp }}</td>
+        <td>{{ item.pressure }}</td>
+        <td>{{ item.humidity }}</td>
+        <td>{{ item.wind_speed }}</td>
+    </tr>
+{% empty %}
+    <tr>
+        <td align="center" colspan="7">Sorry, we have not data here :(</td>
+    </tr>
+{% endfor %}

@@ -1,0 +1,50 @@
+<ul class="pagination justify-content-center">
+    {% if object_list.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ object_list.previous_page_number }}">
+                <i class="fa fa-chevron-left" aria-hidden="true" title="Previous"></i>
+            </a>
+        </li>
+    {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#">
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            </a>
+        </li>
+    {% endif %}
+    {% if object_list.number|add:'-2' > 1 %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ object_list.number|add:'-3' }}">&hellip;</a>
+        </li>
+    {% endif %}
+    {% for i in object_list.paginator.page_range %}
+        {% if object_list.number == i %}
+            <li class="page-item active">
+                <a class="page-link" href="#">{{ i }}</a>
+            </li>
+        {% elif i > object_list.number|add:'-3' and i < object_list.number|add:'3' %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+            </li>
+        {% endif %}
+    {% endfor %}
+    {% if object_list.paginator.num_pages > object_list.number|add:'2' %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ object_list.number|add:'3' }}">&hellip;</a>
+        </li>
+    {% endif %}
+    {% if object_list.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ object_list.next_page_number }}" title="Next">
+                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </a>
+        </li>
+    {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#">
+                <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </a>
+        </li>
+    {% endif %}
+</ul>
+

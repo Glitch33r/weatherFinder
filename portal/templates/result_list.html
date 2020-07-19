@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}WeatherFinder | Results{% endblock %}
+
+{% block content %}
+    <form action="{% url 'weather-portal:results' %}">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" autocomplete="off" id="search-field" name="city-name" class="form-control mb-2"
+                       placeholder="Search by City name">
+            </div>
+            <div class="col">
+                <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                    <input type="text" placeholder="Date from" name="date-from"
+                           class="form-control datetimepicker-input"
+                           data-target="#datetimepicker1"/>
+                    <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                    <input type="text" placeholder="Date to" name="date-to" class="form-control datetimepicker-input"
+                           data-target="#datetimepicker2"/>
+                    <div class="input-group-append" data-target="#datetimepicker2" data-toggle="datetimepicker">
+                        <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="start-filter" class="btn btn-info mb-2">Filter</button>
+        <a href="{% url 'weather-portal:results' %}" class="btn btn-info mb-2">Clear</a>
+    </form>
+    <div class="card">
+        <div class="card-header" style="color: #000000;">Weather results</div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>City</th>
+                    <th>Data</th>
+                    <th>Weather</th>
+                    <th>Temp</th>
+                    <th>Pressure</th>
+                    <th>Humidity</th>
+                    <th>Wind speed</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+                {% for item in object_list %}
+                    <tr>
+                        <td>{{ item.city.name }}</td>
+                        <td>{{ item.date|date:'Y-m-d' }}</td>
+                        <td>{{ item.weather }}</td>
+                        <td>{{ item.temp }}</td>
+                        <td>{{ item.pressure }}</td>
+                        <td>{{ item.humidity }}</td>
+                        <td>{{ item.wind_speed }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td align="center" colspan="7">Sorry, we have not data here :(</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            {% include 'pagination.html' %}
+        </div>
+    </div>
+    <div id="spinner" class="spinner spinner-lg spinner-block">
+        <div class="spinner-bar"></div>
+    </div>
+{% endblock %}
+{% block js %}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#datetimepicker1').datetimepicker({
+                locale: 'ru',
+                format: 'YYYY-MM-DD'
+            });
+            $('#datetimepicker2').datetimepicker({
+                useCurrent: false, //Important! See issue #1075
+                locale: 'ru',
+                format: 'YYYY-MM-DD'
+            });
+        });
+
+    </script>
+    <script>
+        $("#search-field").on("keyup", e => {
+            const {value} = e.target;
+            $.ajax({
+                url: '{% url 'weather-portal:results' %}',
+                data: {
+                    search: value,
+                    page: getUrlParameter('page')
+                },
+                type: 'GET'
+            }).done(function (responseData) {
+                if (responseData['type'] === 'search') {
+                    $('.card-footer').hide();
+                } else if (responseData['type'] === 'default') {
+                    $('.card-footer').show();
+                }
+                $('#tbody').html(responseData['response']);
+            }).fail(function () {
+                console.log('Fail')
+            });
+        });
+
+        $(function () {
+            $("#start-filter").click(function (e) {
+                let form = $(this).closest("form");
+                let action_url = e.currentTarget.action;
+                show();
+                $.ajax({
+                    url: action_url,
+                    type: 'GET',
+                    data:
+                        {
+                            type: 'filter',
+                            data: JSON.stringify(form.serializeArray())
+                        },
+                }).done(function (responseData) {
+                    $('#tbody').html(responseData['response']);
+                    hide();
+                    $('.card-footer').hide();
+                }).fail(function () {
+                    console.log('Fail');
+                });
+
+                e.preventDefault();
+            });
+        });
+
+    </script>
+
+{% endblock %}

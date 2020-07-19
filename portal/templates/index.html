@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}WeatherFinder{% endblock %}
+
+{% block content %}
+    <h1 class="cover-heading">Find weather of your city</h1>
+    <div id="result"></div>
+    <p class="lead">
+        Try to input name of city. <br> If it do not exists - click on create.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button id="find" class="btn btn-success" type="button">Search</button>
+    </form>
+{% endblock %}
+{% block js %}
+    {{ form.media }}
+    <script>
+        $("#find").click(function (e) {
+            let form = $(this).closest("form");
+            show();
+            $.ajax({
+                url: "{% url 'weather-portal:start-find' %}",
+                method: "POST",
+                data: form.serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    hide();
+                    if (data['status']){
+                        $('#result').html('    <div class="alert alert-success">\n' +
+                            '        <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>\n' +
+                            '        <strong>Success!</strong> Now you cen go to <a href="{% url 'weather-portal:results' %}">Results</a> page.\n' +
+                            '    </div>')
+                    }else {
+                        $('#result').html('    <div class="alert alert-danger">\n' +
+                            '        <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>\n' +
+                            '        <strong>Error! </strong>'+ data['msg'] +
+                            '    </div>')
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+    </script>
+{% endblock %}
+
+
