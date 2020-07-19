@@ -87,7 +87,7 @@ def result_view(request):
     if request.is_ajax():
         if request.GET.get('search'):
             text_to_search = request.GET.get('search')
-            part = f"WHERE c.name LIKE '%{text_to_search}%'"
+            part = f"WHERE c.name LIKE '{text_to_search}%'"
 
             return JsonResponse(
                 {
@@ -107,8 +107,8 @@ def result_view(request):
             date_to = filter_data[2]['value'] if filter_data[2]['value'] != '' else Weather.objects.raw(MAX_DATE_QUERY, translations={'max_date': 'date'})[0].date
 
             part = "WHERE w.date BETWEEN '{}' AND '{}'".format(date_from, date_to)
-            if city_name != '':
-                part += "AND c.name LIKE '%{}%'".format(city_name)
+            # if city_name != '':
+            #     part += "AND c.name LIKE '{}%'".format(city_name)
 
             print(FILTER_DATE_QUERY.format(part))
 
