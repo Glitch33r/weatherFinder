@@ -55,13 +55,13 @@ def submit_find_weather(request):
 
 
 def result_view(request):
-    SEARCH_QUERY = """
-        SELECT w.*
-        FROM portal_weather AS w
-                 INNER JOIN portal_city AS c ON w.city_id= c.id
-        {}
-        ORDER BY w.city_id ASC, w.date ASC
-    """
+    # SEARCH_QUERY = """
+    #     SELECT w.*
+    #     FROM portal_weather AS w
+    #              INNER JOIN portal_city AS c ON w.city_id= c.id
+    #     {}
+    #     ORDER BY w.city_id ASC, w.date ASC
+    # """
 
     FILTER_DATE_QUERY = """
         SELECT w.*
@@ -88,18 +88,12 @@ def result_view(request):
         if request.GET.get('search'):
             text_to_search = request.GET.get('search')
             part = f"WHERE c.name LIKE '%{text_to_search}%'"
-            print(part)
-            print(Weather.objects.raw(SEARCH_QUERY.format(part)).query)
-
-            # print(
-            #     Weather.objects.raw(SEARCH_QUERY.format(part))
-            # )
 
             return JsonResponse(
                 {
                     'type': 'search',
                     'response': render_to_string('element.html', {
-                        'object_list': Weather.objects.raw(SEARCH_QUERY.format(part))
+                        'object_list': Weather.objects.filter(city__name__contains=text_to_search)
                     })
                 }
             )
