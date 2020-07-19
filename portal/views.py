@@ -110,6 +110,8 @@ def result_view(request):
             if city_name != '':
                 part += "AND c.name LIKE '%{}%'".format(city_name)
 
+            print(FILTER_DATE_QUERY.format(part))
+
             return JsonResponse(
                 {
                     'response': render_to_string('element.html', {
