@@ -26,7 +26,7 @@ class WeatherFinder:
         else:
             response = response.json()
             data = {
-                'city_id': city,
+                'city': city,
                 'lon': response['coord']['lon'],
                 'lat': response['coord']['lat']
             }
@@ -47,7 +47,7 @@ class WeatherFinder:
                 "wind_speed": day['wind_speed'],
             })
 
-            if self.model_data.objects.filter(date=temp_date.strftime('%Y-%m-%d')).filter(city_id=self.city_id).exists():
+            if self.model_data.objects.filter(date=temp_date.strftime('%Y-%m-%d')).filter(city=self.city_id).exists():
                 continue
             else:
                 self.model_data(**data).save()
